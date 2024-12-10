@@ -5,6 +5,9 @@ description = "write to various log files using a simple API"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "flask-cors>=5.0.0",
     "flask>=3.1.0",
     "types-requests>=2.32.0.20241016",
+    "types-flask-cors>=5.0.0.20240902",
+    "requests>=2.32.3",
 ]

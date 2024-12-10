@@ -1,13 +1,22 @@
+import logging
 from flask import Flask, request, jsonify
 import os
 import tempfile
 from typing import Any, Dict
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
+logging.getLogger('flask_cors').level = logging.DEBUG
 
 # Create a specific directory for logs in the /tmp directory
 LOG_DIR = os.path.join(tempfile.gettempdir(), 'debug-server-files')
 os.makedirs(LOG_DIR, exist_ok=True)
+
+@app.route("/hello")
+def helloWorld():
+  return "Hello, cross-origin-world!"
 
 @app.route('/log', methods=['POST'])
 def log():
@@ -53,4 +62,4 @@ def view_files_as_html():
     return html_content
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5050)
