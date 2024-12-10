@@ -1,0 +1,10 @@
+[project]
+name = "debug-server"
+version = "0.1.0"
+description = "write to various log files using a simple API"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "flask>=3.1.0",
+    "types-requests>=2.32.0.20241016",
+]
