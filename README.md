@@ -59,3 +59,14 @@ hi there
 hi there
 hi there
 ```
+
+# Configuration
+
+There is an auto update feature that will update the UI every 2 seconds.
+
+```bash
+
+# License
+
+MIT
+

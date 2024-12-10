@@ -10,4 +10,5 @@ dependencies = [
     "types-requests>=2.32.0.20241016",
     "types-flask-cors>=5.0.0.20240902",
     "requests>=2.32.3",
+    "watchdog>=6.0.0",
 ]

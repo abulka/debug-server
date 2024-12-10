@@ -1,9 +1,11 @@
 import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template_string
 import os
 import tempfile
 from typing import Any, Dict
 from flask_cors import CORS
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 app = Flask(__name__)
 CORS(app)
@@ -14,9 +16,21 @@ logging.getLogger('flask_cors').level = logging.DEBUG
 LOG_DIR = os.path.join(tempfile.gettempdir(), 'debug-server-files')
 os.makedirs(LOG_DIR, exist_ok=True)
 
+class ChangeHandler(FileSystemEventHandler):
+    def __init__(self):
+        self.modified = False
+
+    def on_modified(self, event):
+        self.modified = True
+
+change_handler = ChangeHandler()
+observer = Observer()
+observer.schedule(change_handler, LOG_DIR, recursive=False)
+observer.start()
+
 @app.route("/hello")
 def helloWorld():
-  return "Hello, cross-origin-world!"
+    return "Hello, cross-origin-world!"
 
 @app.route('/log', methods=['POST'])
 def log():
@@ -58,8 +72,32 @@ def view_files_as_html():
         with open(filepath, 'r') as f:
             content = f.read()
         html_content += f"<h2>{filename}</h2><pre>{content}</pre><hr>"
-    html_content += "</body></html>"
+    html_content += """
+    <script>
+        setInterval(function() {
+            fetch('/check_changes')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.modified) {
+                        location.reload();
+                    }
+                });
+        }, 2000);
+    </script>
+    </body></html>
+    """
     return html_content
 
+@app.route('/check_changes', methods=['GET'])
+def check_changes():
+    global change_handler
+    modified = change_handler.modified
+    change_handler.modified = False
+    return jsonify({'modified': modified})
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5050)
+    try:
+        app.run(debug=True, port=5050)
+    finally:
+        observer.stop()
+        observer.join()
