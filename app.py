@@ -8,6 +8,11 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from datetime import datetime
 import random
+import threading
+
+# This code uses a threading.Lock to ensure that only one thread can write to a
+# file at a time, preventing mixed-up contents.
+lock = threading.Lock()
 
 app = Flask(__name__)
 CORS(app)
@@ -45,11 +50,11 @@ def log():
     content = data.get("content", "")
 
     filepath = os.path.join(LOG_DIR, filename)
-    with open(filepath, "a") as f:
-        f.write(content + "\n")
+    with lock:
+        with open(filepath, "a") as f:
+            f.write(content + "\n")
 
     return jsonify({"message": "Log message written successfully"})
-
 
 @app.route("/files", methods=["GET"])
 def get_list_files():
