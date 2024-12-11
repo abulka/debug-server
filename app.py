@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify, render_template, render_template_string
 import os
 import tempfile
 from typing import Any, Dict
@@ -22,6 +22,9 @@ logging.getLogger("flask_cors").level = logging.DEBUG
 # Create a specific directory for logs in the /tmp directory
 LOG_DIR = os.path.join(tempfile.gettempdir(), "debug-server-files")
 os.makedirs(LOG_DIR, exist_ok=True)
+
+# Define the path to the template file
+TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), "templates", "view_files.html")
 
 
 class ChangeHandler(FileSystemEventHandler):
@@ -80,28 +83,14 @@ def get_file(filename):
 @app.route("/", methods=["GET"])
 def view_files_as_html():
     files = os.listdir(LOG_DIR)
-    html_content = "<html><body>"
-    html_content += "<h1>Log Files</h1>"
+    files_content = []
     for filename in files:
         filepath = os.path.join(LOG_DIR, filename)
         with open(filepath, "r") as f:
             content = f.read()
-        html_content += f"<h2>{filename}</h2><pre>{content}</pre><hr>"
-    html_content += """
-    <script>
-        setInterval(function() {
-            fetch('/check_changes')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.modified) {
-                        location.reload();
-                    }
-                });
-        }, 2000);
-    </script>
-    </body></html>
-    """
-    return html_content
+        files_content.append({"filename": filename, "content": content})
+    
+    return render_template("view_files.html", files=files_content)
 
 
 @app.route("/check_changes", methods=["GET"])

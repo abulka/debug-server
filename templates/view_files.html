@@ -1,0 +1,21 @@
+<html>
+<body>
+    <h1>Log Files!!</h1>
+    {% for file in files %}
+        <h2>{{ file.filename }}</h2>
+        <div>{{ file.content | safe }}</div>
+        <hr>
+    {% endfor %}
+    <script>
+        setInterval(function() {
+            fetch('/check_changes')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.modified) {
+                        location.reload();
+                    }
+                });
+        }, 2000);
+    </script>
+</body>
+</html>
