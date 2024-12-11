@@ -1,11 +1,33 @@
 <html>
+<head>
+    <style>
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            height: 100vh;
+        }
+        .panel {
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 10px;
+        }
+        .panel h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
 <body>
     <h1>Log Files!!</h1>
-    {% for file in files %}
-        <h2>{{ file.filename }}</h2>
-        <div>{{ file.content | safe }}</div>
-        <hr>
-    {% endfor %}
+    <div class="container">
+        {% for file in files %}
+            <div class="panel">
+                <h2>{{ file.filename }}</h2>
+                <div>{{ file.content | safe }}</div>
+            </div>
+        {% endfor %}
+    </div>
     <script>
         setInterval(function() {
             fetch('/check_changes')

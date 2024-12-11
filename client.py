@@ -56,6 +56,11 @@ def sync():
     except requests.exceptions.JSONDecodeError:
         print('Failed to decode JSON response')
 
+def big_message():
+    msg = ""
+    for i in range(200):
+        msg += f"<p>this is line {i}</p>"
+    log_message('long.txt', msg)
 
 if __name__ == '__main__':
     # Get hello world
@@ -64,6 +69,7 @@ if __name__ == '__main__':
 
     # Log a message
     log_message('test.log', 'This is a test log message.')
+    log_message('hello.log', '<p>Invidunt dolor lorem elitr takimata at stet est no gubergren eos, stet eirmod sed no elitr aliquyam aliquyam eos et..</p>')
 
     # Get list of files
     get_files()
@@ -72,4 +78,7 @@ if __name__ == '__main__':
     get_file_content('test.log')
 
     # Call /sync endpoint
-    sync()
+    # sync()
+
+    big_message()
+    
