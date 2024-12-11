@@ -113,12 +113,68 @@ def sync_files():
     content = data.get("content", "")
     files = os.listdir(LOG_DIR)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    random_word = random.choice(["apple", "banana", "cherry", "date", "elderberry"])
+    random_word = random.choice(
+        [
+            "apple",
+            "banana",
+            "cherry",
+            "date",
+            "elderberry",
+            "fig",
+            "grape",
+            "honeydew",
+            "kiwi",
+            "lemon",
+            "mango",
+            "nectarine",
+            "orange",
+            "papaya",
+            "quince",
+            "raspberry",
+            "strawberry",
+            "tangerine",
+            "ugli",
+            "vanilla",
+            "watermelon",
+            "xigua",
+            "yellowfruit",
+            "zucchini",
+            "apricot",
+            "blackberry",
+            "blueberry",
+            "cantaloupe",
+            "coconut",
+            "cranberry",
+            "currant",
+            "dragonfruit",
+            "durian",
+            "gooseberry",
+            "grapefruit",
+            "guava",
+            "jackfruit",
+            "kumquat",
+            "lime",
+            "lychee",
+            "mandarin",
+            "mulberry",
+            "olive",
+            "passionfruit",
+            "peach",
+            "pear",
+            "persimmon",
+            "pineapple",
+            "plum",
+            "pomegranate",
+            "starfruit",
+            "tamarind",
+        ]
+    )
     for filename in files:
         filepath = os.path.join(LOG_DIR, filename)
         with open(filepath, "a") as f:
             f.write(f"<h3>{current_time} - {random_word} - {content}</h3>\n")
     return jsonify({"message": "Files synchronized successfully"})
+
 
 if __name__ == "__main__":
     try:
