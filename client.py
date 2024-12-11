@@ -43,6 +43,20 @@ def get_file_content(filename):
     except requests.exceptions.JSONDecodeError:
         print('Failed to decode JSON response')
 
+def sync():
+    url = f'{BASE_URL}/sync'
+    data = {
+        'content': 'hello'
+    }
+    response = requests.post(url, json=data)
+    print(f'Status code: {response.status_code}, Reason: {response.reason}')
+    print(f'Raw response content: {response.content.decode("utf-8")}')
+    try:
+        print(f'Sync response: {response.json()}')
+    except requests.exceptions.JSONDecodeError:
+        print('Failed to decode JSON response')
+
+
 if __name__ == '__main__':
     # Get hello world
     hello_world()
@@ -56,3 +70,6 @@ if __name__ == '__main__':
 
     # Get content of a specific file
     get_file_content('test.log')
+
+    # Call /sync endpoint
+    sync()
