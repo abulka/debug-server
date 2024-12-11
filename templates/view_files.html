@@ -1,12 +1,19 @@
 <html>
 <head>
     <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
         .container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
             gap: 10px;
-            height: 100vh;
+            height: calc(100% - 50px); /* Adjust height to fit within the viewport */
+            box-sizing: border-box;
         }
         .panel {
             border: 1px solid #ccc;
