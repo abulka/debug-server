@@ -1,4 +1,6 @@
 import requests
+import random
+
 
 BASE_URL = 'http://localhost:5050'
 
@@ -58,11 +60,25 @@ def sync():
 
 def big_message():
     msg = ""
-    for i in range(200):
-        msg += f"<p>this is line {i}</p>"
+    for i in range(100):
+        random_number = random.randint(1, 100)
+        msg += f"<p>this is line {i} random {random_number}</p>"
     log_message('long.txt', msg)
 
+def clear_logs():
+    url = f'{BASE_URL}/clear'
+    response = requests.delete(url)
+    print(f'Status code: {response.status_code}, Reason: {response.reason}')
+    print(f'Raw response content: {response.content.decode("utf-8")}')
+    try:
+        print(f'Clear logs response: {response.json()}')
+    except requests.exceptions.JSONDecodeError:
+        print('Failed to decode JSON response')
+
 if __name__ == '__main__':
+
+    # clear_logs()
+
     # Get hello world
     hello_world()
     # exit(0)
@@ -75,7 +91,7 @@ if __name__ == '__main__':
     get_files()
 
     # Get content of a specific file
-    get_file_content('test.log')
+    # get_file_content('test.log')
 
     # Call /sync endpoint
     # sync()
