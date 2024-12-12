@@ -10,7 +10,7 @@ from datetime import datetime
 import random
 import threading
 
-from lib.fancy_panel import build_fancy_panel
+from lib.fancy_panel import build_fancy_panel, example_table_json_string
 from lib.fancy_panel_tree import build_fancy_panel_tree, example_json_data
 
 # This code uses a threading.Lock to ensure that only one thread can write to a
@@ -49,14 +49,21 @@ def view_files_as_html():
     files = os.listdir(LOG_DIR)
     files_content = []
 
-    files_content.append(build_fancy_panel())
+    # files_content.append(build_fancy_panel(example_table_json_string))
     files_content.append(build_fancy_panel_tree(example_json_data))
 
     for filename in files:
         filepath = os.path.join(LOG_DIR, filename)
         with open(filepath, "r") as f:
             content = f.read()
+
+            if filename.endswith("my_fancy_panel.json"):
+                content = build_fancy_panel(content)
+
         files_content.append({"filename": filename, "content": content})
+
+    # json files first, then the rest
+    files_content.sort(key=lambda x: (not x["filename"].endswith(".json"), x["filename"]))
 
     return render_template("view_files.html", files=files_content)
 
@@ -91,6 +98,15 @@ def clear():
     for file in os.listdir(LOG_DIR):
         os.remove(os.path.join(LOG_DIR, file))
     return jsonify({"message": "All logs cleared"})
+
+@app.route("/clear/<filename>", methods=["DELETE"])
+def clear_file(filename):
+    filepath = os.path.join(LOG_DIR, filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+        return jsonify({"message": f"File {filename} cleared"})
+    else:
+        return jsonify({"message": f"File {filename} not found"}), 404
 
 
 @app.route("/files/<filename>", methods=["GET"])

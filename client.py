@@ -1,5 +1,8 @@
 import requests
 import random
+from lib.fancy_panel import example_table_json_string
+from lib.fancy_panel_tree import example_json_data
+import json
 
 
 BASE_URL = 'http://localhost:5050'
@@ -75,8 +78,17 @@ def clear_logs():
     except requests.exceptions.JSONDecodeError:
         print('Failed to decode JSON response')
 
-if __name__ == '__main__':
+def clear_log(filename):
+    url = f'{BASE_URL}/clear/{filename}'
+    response = requests.delete(url)
+    print(f'Status code: {response.status_code}, Reason: {response.reason}')
+    print(f'Raw response content: {response.content.decode("utf-8")}')
+    try:
+        print(f'Clear log response: {response.json()}')
+    except requests.exceptions.JSONDecodeError:
+        print('Failed to decode JSON response')
 
+def demo1():
     # clear_logs()
 
     # Get hello world
@@ -97,4 +109,27 @@ if __name__ == '__main__':
     # sync()
 
     big_message()
-    
+
+
+def demo2():
+
+    # Clear the specific log file
+    clear_log(filename='my_fancy_panel.json')
+
+    # Convert example_table_json_string to a dict
+    data = json.loads(example_table_json_string)
+
+    # Modify population levels randomly
+    for dict in data:
+        if 'population' in dict:
+            dict['population'] = random.randint(1000, 1000000)
+
+    # Convert back to json
+    modified_json_string = json.dumps(data, indent=4)
+    # print(modified_json_string)
+    log_message('my_fancy_panel.json', modified_json_string)
+
+if __name__ == '__main__':
+
+    # demo1()
+    demo2()
