@@ -30,7 +30,8 @@ def build_fancy_panel_tree(json_data):
           transition: transform 0.2s ease;
         }}
         p.font-bold.cursor-pointer.expanded::before {{
-          content: "⬇️"; /* Unicode for down-pointing triangle */
+          content: "➡️"; /* Unicode for down-pointing triangle */
+          transform: rotate(90deg); /* Rotate for expanded state */
         }}
     </style>
     <script>
