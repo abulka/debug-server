@@ -1,39 +1,57 @@
 def build_fancy_panel_tree(json_data):
     def create_tree_html(node, level=0):
         html = f'<div class="ml-{level * 4}">\n'
-        html += f'<p class="font-bold cursor-pointer" onclick="toggleCollapse(this)">\n'
+
+        # Only add the icon if the node has children
         if "children" in node and node["children"]:
-            html += f'<span class="icon collapsed">▼</span> '
-        html += f'{node["name"]}</p>\n'
-        if "children" in node:
+            html += f'<p class="font-bold cursor-pointer" onclick="toggleCollapse(this)">\n'
+            html += f'▶ {node["name"]}</p>\n'  # Remove span with .icon class
             html += '<div class="ml-4 hidden">'  # Hide child elements by default
             for child in node["children"]:
                 html += create_tree_html(child, level + 1)
             html += '</div>'
+        else:
+            # For leaf nodes without children, don't add an icon
+            html += f'<p class="font-bold">{node["name"]}</p>\n'
+
         html += '</div>'
         return html
 
     filename = "fancy_panel_tree.txt"
     content = f"""
     <style>
-        .icon::before {{ content: "▼"; display: inline-block; width: 1em; }}
-        .icon.collapsed::before {{ content: "▶"; }}
-        .hidden {{ display: none; }}  /* Hide child elements by default */
+        p.font-bold.cursor-pointer {{
+          position: relative;
+          padding-left: 1.5em;
+        }}
+        p.font-bold.cursor-pointer::before {{
+          content: "▶";
+          position: absolute;
+          left: 0;
+          transition: transform 0.2s ease;
+        }}
+        p.font-bold.cursor-pointer.expanded::before {{
+          content: "▼";
+          transform: rotate(90deg);
+        }}
     </style>
     <script>
         function toggleCollapse(element) {{
             var content = element.nextElementSibling;
             if (content) {{
                 content.classList.toggle('hidden');
-                element.querySelector('.icon').classList.toggle('collapsed');
+                element.classList.toggle('expanded');
             }}
         }}
         // Expand all nodes by default
         window.onload = function() {{
-            var nodes = document.querySelectorAll('.icon');
+            var nodes = document.querySelectorAll('p.font-bold.cursor-pointer');
             nodes.forEach(function(node) {{
-                node.classList.remove('collapsed');
-                node.parentNode.nextElementSibling.classList.remove('hidden');
+                var content = node.nextElementSibling;
+                if (content) {{
+                    node.classList.add('expanded');
+                    content.classList.remove('hidden');
+                }}
             }});
         }};
     </script>
@@ -42,6 +60,8 @@ def build_fancy_panel_tree(json_data):
     </div>
     """
 
+    print(content)
+    
     data = {"filename": filename, "content": content}
     return data
 
