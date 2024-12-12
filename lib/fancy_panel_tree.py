@@ -1,38 +1,49 @@
 def build_fancy_panel_tree(json_data):
     def create_tree_html(node, level=0):
-        html = f'<div class="ml-{level * 4}">'
-        html += f'<p class="font-bold cursor-pointer" onclick="toggleCollapse(this)"><span class="icon">▼</span> {node["name"]}</p>'
+        html = f'<div class="ml-{level * 4}">\n'
+        html += f'<p class="font-bold cursor-pointer" onclick="toggleCollapse(this)">\n'
+        if "children" in node and node["children"]:
+            html += f'<span class="icon collapsed">▼</span> '
+        html += f'{node["name"]}</p>\n'
         if "children" in node:
-            html += '<div class="ml-4">'
+            html += '<div class="ml-4 hidden">'  # Hide child elements by default
             for child in node["children"]:
                 html += create_tree_html(child, level + 1)
             html += '</div>'
         html += '</div>'
         return html
-    
+
     filename = "fancy_panel_tree.txt"
     content = f"""
     <style>
         .icon::before {{ content: "▼"; display: inline-block; width: 1em; }}
-        .collapsed .icon::before {{ content: "▶"; }}
+        .icon.collapsed::before {{ content: "▶"; }}
+        .hidden {{ display: none; }}  /* Hide child elements by default */
     </style>
     <script>
         function toggleCollapse(element) {{
-            var nextSibling = element.nextElementSibling;
-            if (nextSibling) {{
-                nextSibling.style.display = nextSibling.style.display === 'none' ? 'block' : 'none';
+            var content = element.nextElementSibling;
+            if (content) {{
+                content.classList.toggle('hidden');
                 element.querySelector('.icon').classList.toggle('collapsed');
             }}
         }}
+        // Expand all nodes by default
+        window.onload = function() {{
+            var nodes = document.querySelectorAll('.icon');
+            nodes.forEach(function(node) {{
+                node.classList.remove('collapsed');
+                node.parentNode.nextElementSibling.classList.remove('hidden');
+            }});
+        }};
     </script>
     <div class="max-w-4xl mx-auto">
         {create_tree_html(json_data)}
     </div>
     """
-    
+
     data = {"filename": filename, "content": content}
     return data
-
 
 
 example_json_data = {
