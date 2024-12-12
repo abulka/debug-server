@@ -11,6 +11,7 @@ import random
 import threading
 
 from lib.fancy_panel import build_fancy_panel
+from lib.fancy_panel_tree import build_fancy_panel_tree, example_json_data
 
 # This code uses a threading.Lock to ensure that only one thread can write to a
 # file at a time, preventing mixed-up contents.
@@ -43,6 +44,23 @@ observer.schedule(change_handler, LOG_DIR, recursive=False)
 observer.start()
 
 
+@app.route("/", methods=["GET"])
+def view_files_as_html():
+    files = os.listdir(LOG_DIR)
+    files_content = []
+
+    files_content.append(build_fancy_panel())
+    files_content.append(build_fancy_panel_tree(example_json_data))
+
+    for filename in files:
+        filepath = os.path.join(LOG_DIR, filename)
+        with open(filepath, "r") as f:
+            content = f.read()
+        files_content.append({"filename": filename, "content": content})
+
+    return render_template("view_files.html", files=files_content)
+
+
 @app.route("/hello")
 def helloWorld():
     return "Hello, cross-origin-world!"
@@ -60,6 +78,7 @@ def log():
             f.write(content + "\n")
 
     return jsonify({"message": "Log message written successfully"})
+
 
 @app.route("/files", methods=["GET"])
 def get_list_files():
@@ -80,22 +99,6 @@ def get_file(filename):
     with open(filepath, "r") as f:
         content = f.read()
     return jsonify({"filename": filename, "content": content})
-
-
-@app.route("/", methods=["GET"])
-def view_files_as_html():
-    files = os.listdir(LOG_DIR)
-    files_content = []
-    
-    files_content.append(build_fancy_panel())
-
-    for filename in files:
-        filepath = os.path.join(LOG_DIR, filename)
-        with open(filepath, "r") as f:
-            content = f.read()
-        files_content.append({"filename": filename, "content": content})
-    
-    return render_template("view_files.html", files=files_content)
 
 
 @app.route("/check_changes", methods=["GET"])
