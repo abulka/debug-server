@@ -10,6 +10,8 @@ from datetime import datetime
 import random
 import threading
 
+from lib.fancy_panel import build_fancy_panel
+
 # This code uses a threading.Lock to ensure that only one thread can write to a
 # file at a time, preventing mixed-up contents.
 lock = threading.Lock()
@@ -84,6 +86,9 @@ def get_file(filename):
 def view_files_as_html():
     files = os.listdir(LOG_DIR)
     files_content = []
+    
+    files_content.append(build_fancy_panel())
+
     for filename in files:
         filepath = os.path.join(LOG_DIR, filename)
         with open(filepath, "r") as f:
